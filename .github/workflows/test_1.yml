@@ -27,7 +27,7 @@ jobs:
        - name: AWS CloudFormation "Deploy CloudFormation Stack" Action for GitHub Actions
          uses: aws-actions/aws-cloudformation-github-deploy@v1.2.0
          with:
-            name: AutoConnectStack # change to unique stack name
+            name: AutoConnectStack123 # change to unique stack name
             template: https://cloudsecurity-act-prod-us-cfn.s3.amazonaws.com/onboarding_stackset_control_tower.yaml # change the url according to region and env
             capabilities: CAPABILITY_IAM,CAPABILITY_NAMED_IAM
             parameter-overrides: >-
