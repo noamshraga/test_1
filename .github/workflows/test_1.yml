@@ -1,0 +1,45 @@
+# This file is for onboarding single cloud account via github actions - documentation - https://wiki-aquasec.atlassian.net/wiki/spaces/RD/pages/446857217/Run+onboarding+single+cloud+account+via+GitHub+Actions
+
+name: OnBoarding single account via github actions
+
+on:
+  # Triggers the workflow on push events
+  push:
+
+jobs:
+  build:
+    # The default
+    runs-on: ubuntu-latest
+
+    # Here you can choose the required regions for deploy infra for workload scanning
+    strategy:
+      matrix:
+        region: [us-east-1, us-east-2] # change/add according to the required regions
+
+    steps:
+       - name: Configure AWS credentials
+         uses: aws-actions/configure-aws-credentials@v1
+         with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{matrix.region}}
+
+       - name: AWS CloudFormation "Deploy CloudFormation Stack" Action for GitHub Actions
+         uses: aws-actions/aws-cloudformation-github-deploy@v1.2.0
+         with:
+            name: AutoConnectStack # change to unique stack name
+            template: https://cloudsecurity-act-prod-us-cfn.s3.amazonaws.com/onboarding_stackset_control_tower.yaml # change the url according to region and env
+            capabilities: CAPABILITY_IAM,CAPABILITY_NAMED_IAM
+            parameter-overrides: >-
+              AquaApiKey=${{secrets.AQUA_API_KEY}},
+              AquaApiTokenVolScan=5525de26a41e4929f696ae4f3f92003bc8fa1ded78373980545c29fdaf26d587,
+              AquaGroupName=Default,
+              AquaSecretKey=${{secrets.AQUA_SECRET_KEY}},
+              ConfigurationID=1222, 
+              NumberRecentImagesECR=3,
+              RandomID=122,
+              Regions="us-east-1,us-east-2", 
+              TagsExcludeEC2="", 
+              TagsIncludeEC2="", 
+              TenantId=13363, 
+              WorkerRoleArn=arn:aws:iam::402136654778:root
